@@ -21,8 +21,8 @@ int main() {
 	
 	// Get user file name
 	std::string file_name; 
-	std::cout << "Type a file name."; 
-	std::cin >> file_name;
+	std::cout << "Type a file name.";  // TODO: Make this take in command line inputs
+	std::cin >> file_name; // TODO: Make this take in command line inputs
 
 	// Import input code from the specified file and convert to string
 	std::fstream file_input;
