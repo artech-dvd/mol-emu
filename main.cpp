@@ -33,6 +33,7 @@ int main() {
 
 	// Index of which character we're currently at in the code (THIS IS VERY IMPORTANT)
 	long int read_index = 0;
+	bool declare_command_end = true;
 
 
 
@@ -42,7 +43,7 @@ int main() {
 	// Vector containg all the variable values(of exp type) that we have declared 
 	std::vector<uint24> exp_variable_values;
 
-	std::cout << "Input length: "<< input.size() << "\n";
+	std::cout << "Code input length: "<< input.size() << "\n";
 
 	while (read_index < input.size()) {
 
@@ -51,59 +52,89 @@ int main() {
 
 
 		// Declare code
-		if (input.substr(read_index, 8) == "declare ") {
-			// Increase the read index by 8
-			read_index += 8;
+		bool declare_command_end = true;
+			if (input.substr(read_index, 8) == "declare ") {
+				// Increase the read index by 8
+				read_index += 8;
+					while (declare_command_end) {
 
-			int var_name_len;
-			int var_value_len;	
+					int var_name_len;
+					int var_value_len;
+					bool declare_no_define = false;
 
-			// Use a for loop to determine the length of the name
-			for (int i = 0; input[read_index + i] != '='; i++) {
-				var_name_len = i;
+					// Use a for loop to determine the length of the name
+					for (int i = 0; input[read_index + i] != '=' && input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
+						var_name_len = i;
+					}
+
+					if (input[read_index + var_name_len + 1] == ';' || input[read_index + var_name_len + 1] == ',') {
+						declare_no_define = true;
+					}
+
+					// Need to do this. Don't know why, it just fixed a problem.
+					var_name_len++;
+
+					// Insert the variable name into the names table
+					exp_variable_names.insert(exp_variable_names.begin(),input.substr(read_index, var_name_len));
+					std::cout << "Variable added: "<< exp_variable_names[0] << "\n";
+
+					// Increment the read index (plus 1, the equals sign isn't a number)
+					read_index += var_name_len + 1;
+					if (!declare_no_define) {
+						for (int i = 0; input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
+							var_value_len = i;
+						}
+
+
+						var_value_len++;
+						/// CONVERTING STRING TO INT24
+
+						// Convert from string to int
+						unsigned int var_value; 
+						std::stringstream conv; 
+						conv << (input.substr(read_index, var_value_len) );
+						conv >> var_value;
+
+						// Convert from int to int24 
+						uint24 yes;
+						yes.int24 = var_value;
+
+						/// END
+						
+						std::cout << "Variable value: "<< yes.int24 << "\n";
+						// Insert the int24 into the values table
+						exp_variable_values.insert(exp_variable_values.begin(), yes);
+						read_index += var_value_len;
+					} else {
+						uint24 null_uint24;
+						null_uint24.int24 = NULL;
+						exp_variable_values.insert(exp_variable_values.begin(), null_uint24);
+
+					}
+					if (input[read_index] == ',') {
+						// Increment the read index so it's not stuck on the comma
+						read_index++;
+						// Increment the read index until it's not pointing to a space
+						while (input[read_index] == ' ') {
+							read_index++;
+						}
+					} else if (input[read_index - 1] == ',') {
+						// Increment the read index so it's not stuck on the comma
+						read_index++;
+						// Increment the read index until it's not pointing to a space
+						while (input[read_index] == ' ') {
+							read_index++;
+						}
+					} else {
+						break;		
+					}
 			}
-
-			// Need to do this. Don't know why, it just fixed a problem.
-			var_name_len++;
-
-			// Insert the variable name into the names table
-			exp_variable_names.insert(exp_variable_names.begin(),input.substr(read_index, var_name_len));
-			std::cout << exp_variable_names[0] << "\n";
-
-			// Increment the read index (plus 1, the equals sign isn't a number)
-			read_index += var_name_len + 1;
-
-			for (int i = 0; input[read_index + i] != ';'; i++) {
-				var_value_len = i;
-			}
-
-
-			var_value_len++;
-			/// CONVERTING STRING TO INT24
-
-			// Convert from string to int
-			unsigned int var_value; 
-			std::stringstream conv; 
-			conv << (input.substr(read_index, var_value_len) );
-			conv >> var_value;
-
-			// Convert from int to int24 
-			uint24 yes;
-			yes.int24 = var_value;
-
-			/// END
-			
-			std::cout << yes.int24 << "\n";
-			// Insert the int24 into the values table
-			exp_variable_values.insert(exp_variable_values.begin(), yes);
-
 		}
 
 		// Increase the read index
 		read_index++;
 	}
-	std::cout << "done lol" << "\n";
+	std::cout << "Finished execution." << "\n";
 
 	return 0;
 }
-
