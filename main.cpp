@@ -75,14 +75,7 @@ int main(int argc, char *argv[]) {
 					}
 
 					// Need to do this. Don't know why, it just fixed a problem.
-					var_name_len++; // According to github copilot chat, 
-					/*
-					The selected code var_name_len++ increments the length of the variable name by 1. 
-					This is needed because the program is parsing a variable declaration statement in 
-					the input code, and it needs to keep track of the length of the variable name in 
-					order to extract the name from the input code. By incrementing var_name_len,
-					 the program ensures that it is reading the entire variable name from the input code.
-					*/
+					var_name_len++; 
 
 					// Insert the variable name into the names table
 					exp_variable_names.insert(exp_variable_names.begin(),input.substr(read_index, var_name_len));
@@ -96,7 +89,14 @@ int main(int argc, char *argv[]) {
 						}
 
 
-						var_value_len++;
+						var_value_len++; // According to github copilot chat, read the comment below
+					/*
+					The selected code var_name_len++ increments the length of the variable name by 1. 
+					This is needed because the program is parsing a variable declaration statement in 
+					the input code, and it needs to keep track of the length of the variable name in 
+					order to extract the name from the input code. By incrementing var_name_len,
+					 the program ensures that it is reading the entire variable name from the input code.
+					*/
 						/// CONVERTING STRING TO INT24
 
 						// Convert from string to int
