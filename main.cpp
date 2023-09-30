@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 // C++ does not have 24-bit integers, so this thingy allows us to make our own
 struct uint24
@@ -18,8 +19,17 @@ bool and_func(int x, int y) {
 
 int main() {
 	
-	// Input code (hard coded at the moment)
-	std::string input = "declare nchar=80;";
+	// Get user file name
+	std::string file_name; 
+	std::cout << "Type a file name."; 
+	std::cin >> file_name;
+
+	// Import input code from the specified file and convert to string
+	std::fstream file_input;
+	file_input.open (file_name, std::ios::in | std::ios::app | std::ios::binary);
+
+	std::string input((std::istreambuf_iterator<char>(file_input)),
+                 std::istreambuf_iterator<char>());
 
 	// Index of which character we're currently at in the code (THIS IS VERY IMPORTANT)
 	long int read_index = 0;
@@ -36,13 +46,17 @@ int main() {
 
 	while (read_index < input.size()) {
 
+		// TODO: Use the input string to recognize stuff as "commands"
+		// When no known commands match the statement in the input code, throw an error and crash\
+
+
 		// Declare code
-		if (input.substr(read_index, 7) == "declare") {
+		if (input.substr(read_index, 8) == "declare ") {
 			// Increase the read index by 8
 			read_index += 8;
 
 			int var_name_len;
-			int var_value_len;
+			int var_value_len;	
 
 			// Use a for loop to determine the length of the name
 			for (int i = 0; input[read_index + i] != '='; i++) {
