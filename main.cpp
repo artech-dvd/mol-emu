@@ -4,12 +4,18 @@
 #include <sstream>
 #include <fstream>
 
-// C++ does not have 24-bit integers, so this thingy allows us to make our own
+// C++ does not have 24-bit integers, so this struct allows us to make our own
 struct uint24
 {
-     unsigned int  int24 : 24;
+    unsigned int  int24 : 24;
 };
 
+// Struct type for expressions
+struct expression
+{
+    unsigned int 	data : 24;
+    bool			declared;
+};
 
 bool and_func(int x, int y) {
 	// Returns both of the first bit of X and Y are both true
@@ -44,7 +50,7 @@ int main(int argc, char *argv[]) {
 	std::vector<std::string> exp_variable_names;
 
 	// Vector containg all the variable values(of exp type) that we have declared 
-	std::vector<uint24> exp_variable_values;
+	std::vector<expression> exp_variable_values;
 
 	// std::cout << "Code input length: "<< input.size() << "\n"; // i assume temporary
 
@@ -99,19 +105,21 @@ int main(int argc, char *argv[]) {
 						conv >> var_value;
 
 						// Convert from int to int24 
-						uint24 yes;
-						yes.int24 = var_value;
+						expression yes;
+						yes.data = var_value;
+						yes.declared = true;
 
 						/// END
 						
-						std::cout << "Variable value: "<< yes.int24 << "\n";
+						std::cout << "Variable value: "<< yes.data << "\n";
 						// Insert the int24 into the values table
 						exp_variable_values.insert(exp_variable_values.begin(), yes);
 						read_index += var_value_len;
 					} else {
-						uint24 null_uint24;
-						null_uint24.int24 = 0;
-						exp_variable_values.insert(exp_variable_values.begin(), null_uint24);
+						expression null_exp;
+						null_exp.data = 0;
+						null_exp.declared = false;
+						exp_variable_values.insert(exp_variable_values.begin(), null_exp);
 
 					}
 					std::cout << "\n";
