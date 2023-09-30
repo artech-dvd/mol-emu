@@ -111,6 +111,7 @@ int main() {
 						exp_variable_values.insert(exp_variable_values.begin(), null_uint24);
 
 					}
+					std::cout << "\n";
 					if (input[read_index] == ',') {
 						// Increment the read index so it's not stuck on the comma
 						read_index++;
