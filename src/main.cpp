@@ -24,6 +24,8 @@ bool and_func(int x, int y) {
 	return ( ( x & ( 1 << 0 )) >> 0) &&  ( ( y & ( 1 << 0 )) >> 0);
 }
 
+
+
 int main(int argc, char *argv[]) {
 	
 	// Get user file name
@@ -54,7 +56,6 @@ int main(int argc, char *argv[]) {
 	// Vector containg all the variable values(of exp type) that we have declared 
 	std::vector<expression> exp_variable_values;
 
-	// std::cout << "Code input length: "<< input.size() << "\n"; // i assume temporary
 
 	while (read_index < input.size()) {
 
@@ -69,89 +70,104 @@ int main(int argc, char *argv[]) {
 
 		// Declare code
 		bool declare_command_end = true;
-			if (command == DECLARE) {
-				// Increase the read index by 8
-				read_index += 8;
-					while (declare_command_end) {
+		if (command == DECLARE) {
+			// Increase the read index by 8
+			read_index += 8;
+				while (declare_command_end) {
 
-					int var_name_len;
-					int var_value_len;
-					bool declare_no_define = false;
+				int var_name_len;
+				int var_value_len;
+				bool declare_no_define = false;
 
-					// Use a for loop to determine the length of the name
-					for (int i = 0; input[read_index + i] != '=' && input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
-						var_name_len = i;
+				// Use a for loop to determine the length of the name
+				for (int i = 0; input[read_index + i] != '=' && input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
+					var_name_len = i;
+				}
+
+				if (input[read_index + var_name_len + 1] == ';' || input[read_index + var_name_len + 1] == ',') {
+					declare_no_define = true;
+				}
+
+				var_name_len++;
+
+				/// TRIM OFF SPACES AT THE END OF THE VARIABLE NAME TO MAKE ACCESSING VIA INPUT CODE POSSIBLE
+
+				// Create a string for the variable name
+				std::string var_name = input.substr(read_index, var_name_len);
+
+				// Find the last character in the variable name and save it to "found"
+				int found = var_name.find_last_not_of(' ');
+
+				// Erase all characters between "found" and the string's end
+				var_name.erase (found + 1,var_name.size()); 
+
+				std::cout << found << "\n";
+
+
+				// Insert the variable name into the names table
+				exp_variable_names.insert(exp_variable_names.begin(),var_name);
+				std::cout << "Variable added: "<< exp_variable_names[0] << "." << "\n";
+
+				// Increment the read index (plus 1, the equals sign isn't a number)
+				read_index += var_name_len + 1;
+				if (!declare_no_define) {
+
+					for (int i = 0; input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
+						var_value_len = i;
 					}
+					var_value_len++;
+					
+					/// CONVERTING STRING TO INT24
 
-					if (input[read_index + var_name_len + 1] == ';' || input[read_index + var_name_len + 1] == ',') {
-						declare_no_define = true;
-					}
+					// Convert from string to int
+					unsigned int var_value; 
+					std::stringstream conv; 
+					conv << (input.substr(read_index, var_value_len) );
+					conv >> var_value;
 
-					// Need to do this. Don't know why, it just fixed a problem.
-					var_name_len++;
+					// Convert from int to int24 
+					expression yes;
+					yes.data = var_value;
+					yes.declared = true;
 
-					// Insert the variable name into the names table
-					exp_variable_names.insert(exp_variable_names.begin(),input.substr(read_index, var_name_len));
-					std::cout << "Variable added: "<< exp_variable_names[0] << "\n";
+					/// END
+							
+					std::cout << "Variable value: "<< yes.data << "\n";
+					// Insert the int24 into the values table
+					exp_variable_values.insert(exp_variable_values.begin(), yes);
+					read_index += var_value_len;
+				} else {
+					expression null_exp;
+					null_exp.data = 0;
+					null_exp.declared = false;
+					exp_variable_values.insert(exp_variable_values.begin(), null_exp);
 
-					// Increment the read index (plus 1, the equals sign isn't a number)
-					read_index += var_name_len + 1;
-					if (!declare_no_define) {
-						for (int i = 0; input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
-							var_value_len = i;
-						}
-
-
-						var_value_len++;
-						/// CONVERTING STRING TO INT24
-
-						// Convert from string to int
-						unsigned int var_value; 
-						std::stringstream conv; 
-						conv << (input.substr(read_index, var_value_len) );
-						conv >> var_value;
-
-						// Convert from int to int24 
-						expression yes;
-						yes.data = var_value;
-						yes.declared = true;
-
-						/// END
-						
-						std::cout << "Variable value: "<< yes.data << "\n";
-						// Insert the int24 into the values table
-						exp_variable_values.insert(exp_variable_values.begin(), yes);
-						read_index += var_value_len;
-					} else {
-						expression null_exp;
-						null_exp.data = 0;
-						null_exp.declared = false;
-						exp_variable_values.insert(exp_variable_values.begin(), null_exp);
-
-					}
-					std::cout << "\n";
-					if (input[read_index] == ',') {
-						// Increment the read index so it's not stuck on the comma
+				}
+				std::cout << "\n";
+				if (input[read_index] == ',') {
+					// Increment the read index so it's not stuck on the comma
+					read_index++;
+					// Increment the read index until it's not pointing to a space
+					while (input[read_index] == ' ') {
 						read_index++;
-						// Increment the read index until it's not pointing to a space
-						while (input[read_index] == ' ') {
-							read_index++;
-						}
-					} else if (input[read_index - 1] == ',') {
-						// Increment the read index so it's not stuck on the comma
-						read_index++;
-						// Increment the read index until it's not pointing to a space
-						while (input[read_index] == ' ') {
-							read_index++;
-						}
-					} else {
-						break;		
 					}
+				} else if (input[read_index - 1] == ',') {
+					// Increment the read index so it's not stuck on the comma
+					read_index++;
+					// Increment the read index until it's not pointing to a space
+					while (input[read_index] == ' ') {
+						read_index++;
+					}
+				} else {
+					break;		
+				}
 			}
 		}
 
 		//TODO: Assign code
-
+		if (command == ASSIGN) {
+			std::cout << "Assign command recognized." << "\n";
+		}
 
 		// Increase the read index
 		read_index++;
