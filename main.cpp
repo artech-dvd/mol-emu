@@ -17,12 +17,15 @@ bool and_func(int x, int y) {
 	return ( ( x & ( 1 << 0 )) >> 0) &&  ( ( y & ( 1 << 0 )) >> 0);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
 	
 	// Get user file name
 	std::string file_name; 
-	std::cout << "Type a file name.";  // TODO: Make this take in command line inputs
-	std::cin >> file_name; // TODO: Make this take in command line inputs
+	if (argc<2 || argc>3) {
+		throw std::invalid_argument("Invalid number of arguments. Please specify a file name.");
+	} else {
+		file_name = argv[1];
+	}
 
 	// Import input code from the specified file and convert to string
 	std::fstream file_input;
@@ -43,7 +46,7 @@ int main() {
 	// Vector containg all the variable values(of exp type) that we have declared 
 	std::vector<uint24> exp_variable_values;
 
-	std::cout << "Code input length: "<< input.size() << "\n";
+	// std::cout << "Code input length: "<< input.size() << "\n"; // i assume temporary
 
 	while (read_index < input.size()) {
 
