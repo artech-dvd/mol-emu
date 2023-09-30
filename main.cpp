@@ -107,7 +107,7 @@ int main() {
 						read_index += var_value_len;
 					} else {
 						uint24 null_uint24;
-						null_uint24.int24 = NULL;
+						null_uint24.int24 = 0;
 						exp_variable_values.insert(exp_variable_values.begin(), null_uint24);
 
 					}
