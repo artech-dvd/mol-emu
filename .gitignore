@@ -1,2 +1,4 @@
+# No compiled files
+
 *.exe
-*.txt
+build/*

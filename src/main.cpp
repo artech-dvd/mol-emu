@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include "commands.h"
 
 // C++ does not have 24-bit integers, so this struct allows us to make our own
 struct uint24
@@ -42,6 +43,7 @@ int main(int argc, char *argv[]) {
 
 	// Index of which character we're currently at in the code (THIS IS VERY IMPORTANT)
 	long int read_index = 0;
+	int command;
 	bool declare_command_end = true;
 
 
@@ -56,13 +58,18 @@ int main(int argc, char *argv[]) {
 
 	while (read_index < input.size()) {
 
-		// TODO: Use the input string to recognize stuff as "commands"
-		// When no known commands match the statement in the input code, throw an error and crash\
-
+		// TODO: Replace these if-else loops with a switch loop to improve readability
+		if(input.substr(read_index, 8) == "declare ") {
+			command = DECLARE;
+		} else if (input.substr(read_index, 2) == "<-") {
+			command = ASSIGN;
+		} else {
+			command = UNKNOWN;
+		}
 
 		// Declare code
 		bool declare_command_end = true;
-			if (input.substr(read_index, 8) == "declare ") {
+			if (command == DECLARE) {
 				// Increase the read index by 8
 				read_index += 8;
 					while (declare_command_end) {
@@ -142,6 +149,9 @@ int main(int argc, char *argv[]) {
 					}
 			}
 		}
+
+		//TODO: Assign code
+
 
 		// Increase the read index
 		read_index++;
