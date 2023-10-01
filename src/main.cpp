@@ -3,13 +3,9 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include "commands.h"
 
-// C++ does not have 24-bit integers, so this struct allows us to make our own
-struct uint24
-{
-    unsigned int  int24 : 24;
-};
 
 // Struct type for expressions
 struct expression
@@ -115,7 +111,7 @@ int main(int argc, char *argv[]) {
 					while (input[read_index + var_value_len] != ';' && input[read_index + var_value_len] != ',') {
 						var_value_len++;
 					}
-					
+
 					var_value_len++;
 					
 					/// CONVERTING STRING TO INT24
@@ -145,14 +141,7 @@ int main(int argc, char *argv[]) {
 
 				}
 				std::cout << "\n";
-				if (input[read_index] == ',') {
-					// Increment the read index so it's not stuck on the comma
-					read_index++;
-					// Increment the read index until it's not pointing to a space
-					while (input[read_index] == ' ') {
-						read_index++;
-					}
-				} else if (input[read_index - 1] == ',') {
+				if (input[read_index] == ',' || input[read_index - 1] == ',') {
 					// Increment the read index so it's not stuck on the comma
 					read_index++;
 					// Increment the read index until it's not pointing to a space
@@ -167,19 +156,52 @@ int main(int argc, char *argv[]) {
 
 		//TODO: Assign code
 		if (command == ASSIGN) {
-			int assign_var_offset;
+			int assign_leftside_end = read_index - 1;
+			int assign_rightside_len = 0;
+			std::string assign_leftside, assign_rightside;
 			std::cout << "Assign command recognized." << "\n";
 			std::cout << input.substr(0, read_index) << "\n";
-			for (int i = 0; input[read_index - i] == ' '; i++) {
-				assign_var_offset = i;
-				std::cout << input[assign_var_offset] << i << "\n";
-			}
-		}
 
+			// Finding the end of the value before the arrow
+
+			// Go backwards until we stop encountering spaces
+			while (input[assign_leftside_end] == ' ') {
+				assign_leftside_end--;
+			}
+			std::cout << assign_leftside_end << input[assign_leftside_end] << "\n";
+
+			// Finding the beginning of the value before the arrow
+			int assign_leftside_begin = assign_leftside_end;
+
+
+			// Go backwards until we find a semicolon
+			while (input[assign_leftside_begin] != ';') {
+				assign_leftside_begin--;	
+				std::cout << assign_leftside_begin << input[assign_leftside_begin] << "\n";
+			}
+
+			// Use our new pointers to create a string of the left value's name
+			assign_leftside = input.substr(assign_leftside_begin, assign_leftside_end - assign_leftside_begin + 1);
+
+			// Move the read index past the left arrow
+			read_index += 2;
+
+			// Increment the pointer until we reach a semicolon
+			while (input[read_index + assign_rightside_len] != ';') {
+				assign_rightside_len++;
+			}
+
+			// Use our new pointers to create a string of the right value's name
+			assign_rightside = input.substr(read_index, assign_rightside_len);
+
+			// Detected variable name
+			// TODO: Remove semicolon and spaces from the beginning to allow searching for it in the vector
+			std::cout << "." << assign_leftside << ".\n";
+		}
 		// Increase the read index
 		read_index++;
 	}
-	std::cout << "Finished execution." << "\n";
+	std::cout << "\n" << "Finished execution." << "\n";
 
 	return 0;
 }
