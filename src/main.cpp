@@ -14,12 +14,22 @@ struct expression
     bool			declared;
 };
 
-bool and_func(int x, int y) {
-	// Returns both of the first bit of X and Y are both true
-	// Sorry for the fancy unreadable math, it's the solution I found to this on StackOverflow
-	return ( ( x & ( 1 << 0 )) >> 0) &&  ( ( y & ( 1 << 0 )) >> 0);
-}
 
+expression string_to_exp(std::string input_str) {
+ 		// Convert from string to int
+		unsigned int str_value;
+ 		std::stringstream conv; 
+		conv << (input_str);
+		conv >> str_value;
+
+		// Convert from int to int24 
+		expression out;
+		out.data = str_value;
+		out.declared = true;
+
+		// Return the int24
+		return out;
+}
 
 
 int main(int argc, char *argv[]) {
@@ -71,68 +81,56 @@ int main(int argc, char *argv[]) {
 			read_index += 8;
 				while (declare_command_end) {
 
-				int var_name_len = 0;
-				int var_value_len = 0;
+				int declare_var_name_len = 0;
+				int declare_var_value_len = 0;
 				bool declare_no_define = false;
 
 				// Move the pointer forward until we find an equals sign, a semicolon, or a comma
-				while (input[read_index + var_name_len] != '=' && input[read_index + var_name_len] != ';' && input[read_index + var_name_len] != ',') {
-					var_name_len++;
+				while (input[read_index + declare_var_name_len] != '=' && input[read_index + declare_var_name_len] != ';' && input[read_index + declare_var_name_len] != ',') {
+					declare_var_name_len++;
 				}
 
 				// If we find a semicolon or a comma instead of the variable's definition, it probably doesn't have a definition. Skip the value recognition code.
-				if (input[read_index + var_name_len + 1] == ';' || input[read_index + var_name_len + 1] == ',') {
+				if (input[read_index + declare_var_name_len + 1] == ';' || input[read_index + declare_var_name_len + 1] == ',') {
 					declare_no_define = true;
 				}
-				var_name_len++;
+				declare_var_name_len++;
 
 				/// TRIM OFF SPACES AT THE END OF THE VARIABLE NAME TO MAKE ACCESSING VIA INPUT CODE POSSIBLE
 
-				// Create a string for the variable name
-				std::string var_name = input.substr(read_index, var_name_len);
+				// Create a string for the declare_variable name
+				std::string declare_var_name = input.substr(read_index, declare_var_name_len);
 
-				// Find the last character in the variable name and save it to "found"
-				int found = var_name.find_last_not_of(" ,=;");
+				// Find the last character in the declare_variable name and save it to "found"
+				int found = declare_var_name.find_last_not_of(" ,=;");
 
 				// Erase all characters between "found" and the string's end
-				var_name.erase (found + 1,var_name.size()); 
+				declare_var_name.erase (found + 1,declare_var_name.size()); 
 
 
 
 
 				// Insert the variable name into the names table
-				exp_variable_names.insert(exp_variable_names.begin(),var_name);
+				exp_variable_names.insert(exp_variable_names.begin(),declare_var_name);
 				std::cout << "Variable added: "<< exp_variable_names[0] << "." << "\n";
 
 				// Increment the read index (plus 1, the equals sign isn't a number)
-				read_index += var_name_len + 1;
+				read_index += declare_var_name_len + 1;
 				if (!declare_no_define) {
 
-					while (input[read_index + var_value_len] != ';' && input[read_index + var_value_len] != ',') {
-						var_value_len++;
+					while (input[read_index + declare_var_value_len] != ';' && input[read_index + declare_var_value_len] != ',') {
+						declare_var_value_len++;
 					}
 
-					var_value_len++;
+					declare_var_value_len++;
 					
-					/// CONVERTING STRING TO INT24
-
-					// Convert from string to int
-					unsigned int var_value; 
-					std::stringstream conv; 
-					conv << (input.substr(read_index, var_value_len) );
-					conv >> var_value;
-
-					// Convert from int to int24 
-					expression yes;
-					yes.data = var_value;
-					yes.declared = true;
-
-					/// END
+					// Convert the value string to int24
+					expression declare_var_value = string_to_exp(input.substr(read_index, declare_var_value_len));
 							
-					std::cout << "Variable value: "<< yes.data << "\n";
+					std::cout << "Variable value: "<< declare_var_value.data << "\n";
 					// Insert the int24 into the values table
-					exp_variable_values.insert(exp_variable_values.begin(), yes);
-					read_index += var_value_len;
+					exp_variable_values.insert(exp_variable_values.begin(), declare_var_value);
+					read_index += declare_var_value_len;
 				} else {
 					expression null_exp;
 					null_exp.data = 0;
@@ -159,8 +157,6 @@ int main(int argc, char *argv[]) {
 			int assign_leftside_end = read_index - 1;
 			int assign_rightside_len = 0;
 			std::string assign_leftside, assign_rightside;
-			std::cout << "Assign command recognized." << "\n";
-			std::cout << input.substr(0, read_index) << "\n";
 
 			// Finding the end of the value before the arrow
 
@@ -168,7 +164,6 @@ int main(int argc, char *argv[]) {
 			while (input[assign_leftside_end] == ' ') {
 				assign_leftside_end--;
 			}
-			std::cout << assign_leftside_end << input[assign_leftside_end] << "\n";
 
 			// Finding the beginning of the value before the arrow
 			int assign_leftside_begin = assign_leftside_end;
@@ -177,7 +172,6 @@ int main(int argc, char *argv[]) {
 			// Go backwards until we find a semicolon
 			while (input[assign_leftside_begin] != ';') {
 				assign_leftside_begin--;	
-				std::cout << assign_leftside_begin << input[assign_leftside_begin] << "\n";
 			}
 
 			// Use our new pointers to create a string of the left value's name
@@ -194,9 +188,17 @@ int main(int argc, char *argv[]) {
 			// Use our new pointers to create a string of the right value's name
 			assign_rightside = input.substr(read_index, assign_rightside_len);
 
-			// Detected variable name
-			// TODO: Remove semicolon and spaces from the beginning to allow searching for it in the vector
-			std::cout << "." << assign_leftside << ".\n";
+			// Erase all semicolons, spaces, carriage returns, new lines, and tabs at the start of the string
+			int found = assign_leftside.find_first_not_of("; \r\n\t");
+			assign_leftside.erase(0, found);
+
+			// Find left side value in the expression names vector
+			std::vector<std::string>::iterator exp_names_itr = find(exp_variable_names.begin(), exp_variable_names.end(), assign_leftside);
+
+			// Replace the variable found before's value with the right side value
+			exp_variable_values.at(exp_names_itr - exp_variable_names.begin()) = string_to_exp(assign_rightside);
+			std::cout << "Replaced the value of variable " << assign_leftside << " with " << string_to_exp(assign_rightside).data << "\n";
+
 		}
 		// Increase the read index
 		read_index++;
