@@ -75,19 +75,19 @@ int main(int argc, char *argv[]) {
 			read_index += 8;
 				while (declare_command_end) {
 
-				int var_name_len;
-				int var_value_len;
+				int var_name_len = 0;
+				int var_value_len = 0;
 				bool declare_no_define = false;
 
-				// Use a for loop to determine the length of the name
-				for (int i = 0; input[read_index + i] != '=' && input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
-					var_name_len = i;
+				// Move the pointer forward until we find an equals sign, a semicolon, or a comma
+				while (input[read_index + var_name_len] != '=' && input[read_index + var_name_len] != ';' && input[read_index + var_name_len] != ',') {
+					var_name_len++;
 				}
 
+				// If we find a semicolon or a comma instead of the variable's definition, it probably doesn't have a definition. Skip the value recognition code.
 				if (input[read_index + var_name_len + 1] == ';' || input[read_index + var_name_len + 1] == ',') {
 					declare_no_define = true;
 				}
-
 				var_name_len++;
 
 				/// TRIM OFF SPACES AT THE END OF THE VARIABLE NAME TO MAKE ACCESSING VIA INPUT CODE POSSIBLE
@@ -96,12 +96,12 @@ int main(int argc, char *argv[]) {
 				std::string var_name = input.substr(read_index, var_name_len);
 
 				// Find the last character in the variable name and save it to "found"
-				int found = var_name.find_last_not_of(' ');
+				int found = var_name.find_last_not_of(" ,=;");
 
 				// Erase all characters between "found" and the string's end
 				var_name.erase (found + 1,var_name.size()); 
 
-				std::cout << found << "\n";
+
 
 
 				// Insert the variable name into the names table
@@ -112,9 +112,10 @@ int main(int argc, char *argv[]) {
 				read_index += var_name_len + 1;
 				if (!declare_no_define) {
 
-					for (int i = 0; input[read_index + i] != ';' && input[read_index + i] != ','; i++) {
-						var_value_len = i;
+					while (input[read_index + var_value_len] != ';' && input[read_index + var_value_len] != ',') {
+						var_value_len++;
 					}
+					
 					var_value_len++;
 					
 					/// CONVERTING STRING TO INT24
@@ -166,7 +167,13 @@ int main(int argc, char *argv[]) {
 
 		//TODO: Assign code
 		if (command == ASSIGN) {
+			int assign_var_offset;
 			std::cout << "Assign command recognized." << "\n";
+			std::cout << input.substr(0, read_index) << "\n";
+			for (int i = 0; input[read_index - i] == ' '; i++) {
+				assign_var_offset = i;
+				std::cout << input[assign_var_offset] << i << "\n";
+			}
 		}
 
 		// Increase the read index
