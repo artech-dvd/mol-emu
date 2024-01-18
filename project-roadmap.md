@@ -1,7 +1,7 @@
 ## Stage 0
 
 * Scanning in/digitization of all documents
-* Analyzation of MOL 940's syntax
+* Analysis of MOL 940's syntax
 
 ## Stage 1
 
