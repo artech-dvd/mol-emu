@@ -1,0 +1,57 @@
+:UTILTY, 11/16/69 2023:44 WHP ;
+
+1 .IGD=1;
+
+2  Description of the UTILTY overlay
+
+   2a The UTILTY  overlay contains MOL procedures. which are used by all
+   other overlays.  They  are  used  frequently,  and  should  always be
+   available  to  other routines.  Hence they are always relabeled  into
+   addressable core, currently in core page 3.
+
+   2b Also in the same overlay are several tables. and constants.
+
+   2c This page is read-only, and shared.
+
+====================================================================================
+
+Trascripted as of 01/19/2024. Note: Page numbers and hard line wrap for code has been removed. Otherwise, everything has been directly transcripted from original document at [https://bitsavers.org/pdf/sri/arc/sds-940/NLS_Sources_Part_1_Nov69.pdf]
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     REMOVE ALL ABOVE TEXT AND THIS WARNING TO MAKE COMPILER READ FILE PROPERLY
+                    THIS WARNING WAS NOT IN THE ORIGINAL FILE.
+====================================================================================
+
+3 %Procedures in the UTILTY overlay%
+
+   3a DECLARE origin [13777B];
+
+   3b (contin)PROCEDURE; %for starting NLS%
+
+      3b1 %continue point for NLS%
+
+      3b2 %This procedure must always start at location 14000%
+
+      3b3 EXECUTE recint; GOTO rstrl END.
+
+   3c DECLARE EXTERNAL
+
+      3c1  regary=(1,smareg,smbreg,smec,smcreg,smes,
+
+         3c1a  numnl,litll,stnl,stnol,fnml,stn2l,l,sarl),
+
+         3c1b  regcv=(0,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1);
+
+   3d DECLARE EXTERNAL
+
+      3d1  cmdopt=(1,2,4,8), %underline,italics,bolld,flicker%
+
+      3d2  lcmsk=(0,77600000B,77777400B),
+
+      3d3  chrmsk=(77600000B,00177400B,377B),
+
+      3d4 enchr=377B, headl=600000B, icksum=0, ttyno=-1,
+
+      3d5  igrps=(0,statem,charac,item,vector),
+
+      3d6  igrpc=(0,63B,43B,51B,66B),
