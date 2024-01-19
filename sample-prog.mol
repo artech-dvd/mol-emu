@@ -1,0 +1,35 @@
+(inchar) procedure;
+	declare nchar=80, mchar=80, maxch=80, line[80], i ;
+	declare external list=l, nline=0, If=153b, cr=155b, space=0b;
+	declare star=' *',arrow=' ^', peeked=0;
+	if peeked then
+		begin
+			peeked_0;
+			return(line[nchar)) end;
+	if nchar .ge mchar
+		then 
+			begin
+				for i from 0 inc 1 to maxch do
+					begin
+						line[i] +- gench();
+						if .ar .eq If then goto m1 end;
+				mchar _ maxch;
+				goto m2;
+				(ml): mchar _ i;
+				(m2): if list then
+					begin
+						call putch(star);
+						for i from 0 inc 1 to mchar do call putch(line[i]) end;
+				nchar _ 0;
+				bump nline end
+		else bump nchar;
+	return(line[nchar]);
+	entry (perr);
+		call putch(star);
+		for i from 0 inc 1 to mschar do putch(line[i));
+		for i from 0 inc 1 to nchar-l do putch(space);
+		call putch{arrow);
+		call putch(cr);
+		call putch(lf);
+		return
+	endp.
