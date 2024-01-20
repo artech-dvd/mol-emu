@@ -1,0 +1,12 @@
+3k (push) %blablabla%
+3l PROCEDURE;
+	3l1 %push the b register onto the general stack%
+	3l2 IF stackt <= stack DO-SINGLE !err $6;
+	3l3 BUMP stack;
+	3l4 [stack] _ .BR;
+	3l5 RETURN END.
+3m (pop) %blablabla%
+3n PROCEDURE;
+	3n1 %pop the general stack 1 cell, into the b register%
+	3n2 IF stack <= stack1 DO-SINGLE rerror();
+	3n3 .BR _ [stack]; stack _+ -1 END.
